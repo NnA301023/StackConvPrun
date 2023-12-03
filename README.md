@@ -9,7 +9,7 @@ The utilization of a concatenation layer based on two backbone architectures, su
 
 # Conclusion
 
-Based on the evaluation results, we successfully reduced the training time of the baseline model from 30 minutes per epoch to just 1 minute. While the evaluation results show a trade-off, the achieved improvements in computational efficiency are deemed acceptable.a
+Based on the evaluation results, we successfully reduced the training time of the baseline model from 30 minutes per epoch to just 1 minute. While the evaluation results show a trade-off, the achieved improvements in computational efficiency are deemed acceptable.
 
 # Evaluation Result
 
