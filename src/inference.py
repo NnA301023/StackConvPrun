@@ -23,4 +23,4 @@ def predict(
     class_indices = result_proba.argmax(axis = 1)[0]
     conf_score = result_proba[0][class_indices]
     class_map = idx_to_class.get(class_indices)
-    return class_map, conf_score
+    return result_proba, class_map, conf_score

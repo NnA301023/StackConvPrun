@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from PIL import Image
 import streamlit as st
 from src.loader import download_model
@@ -19,14 +20,25 @@ def interface_prediction():
     )
     if upload is not None:
         image = Image.open(upload)
-        cls, conf = predict(model, image.resize((224, 224)))
+        score_conf, cls, conf = predict(model, image.resize((224, 224)))
         st.image(image, use_column_width="always")
         st.success(f"Predicted image: {cls} with confidence score: {conf}")
+        min_score = score_conf.min()
+        max_score = score_conf.max()
+        score_conf = ((score_conf - min_score) / (max_score - min_score)) * 100
+        df_score = pd.DataFrame(score_conf, columns=["Bare", "Sedang", "Tinggi"])
+        # df_score['Conf. Score'] = df_score['Conf. Score'].apply(lambda i: round(i, 2))
+        st.bar_chart(df_score)
     else:
         st.warning("Please Upload Image...")
 
 def about_me():
-    pass
+    st.markdown(
+        """
+        Hi Everyone, im ... !
+        
+        """
+    )
 
 if __name__ == "__main__":
     st.title("Peat Land Image Classification from UAV Images")
@@ -41,9 +53,4 @@ if __name__ == "__main__":
     with tab_predict:
         interface_prediction()
     with tab_about:
-        st.markdown(
-            """
-            Hi Everyone, im ... !
-            
-            """
-        )
+        about_me()
