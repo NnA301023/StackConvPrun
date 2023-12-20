@@ -3,6 +3,7 @@ import random
 import pandas as pd
 from PIL import Image
 import streamlit as st
+import plotly.express as px
 from src.loader import download_model
 from src.inference import load, predict
 
@@ -37,9 +38,21 @@ def interface_prediction():
             "Class": ["Bare", "Sedang", "Tinggi"],
             "Conf. Score": result_score
         })
-        df_score = df_score.set_index("Class")
+        # df_score = df_score.set_index("Class")
         st.success(f"Predicted image: {cls} with confidence score: {max(result_score)}")
-        st.bar_chart(df_score)
+        
+        colors = px.colors.qualitative.Set1
+        fig = px.bar(
+            df_score, 
+            x='Conf. Score', 
+            y='Class', 
+            orientation='h',
+            color='Class',
+            color_discrete_sequence=colors,
+            title='Confidence Scores for Each Class',
+            labels={'Conf. Score': 'Confidence Score'}
+        )
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Please Upload Image...")
 
