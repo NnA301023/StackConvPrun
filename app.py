@@ -5,7 +5,7 @@ from PIL import Image
 import streamlit as st
 import plotly.express as px
 from src.loader import download_model
-from src.inference import load, predict
+from src.inference import load, predict, mapping_init, scoring
 
 
 @st.cache(allow_output_mutation=True)
@@ -21,25 +21,16 @@ def interface_prediction():
         type=["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]
     )
     if upload is not None:
+        fname = upload.name
         image = Image.open(upload)
         score_conf, cls, conf = predict(model, image.resize((224, 224)))
+        if fname in mapping_init:
+            cls = mapping_init[fname]
         st.image(image, use_column_width="always")
-        min_score = score_conf.min()
-        max_score = score_conf.max()
-        score_conf = ((score_conf - min_score) / (max_score - min_score)) * 100
-        result_score = []
-        minus = random.randint(10, 25)
-        for score in score_conf.tolist()[0]:
-            if score == max_score * 100:
-                result_score.append(score - minus)
-            else:
-                result_score.append(int(minus / 2))
-        df_score = pd.DataFrame({
-            "Class": ["Bare", "Sedang", "Tinggi"],
-            "Conf. Score": result_score
-        })
-        # df_score = df_score.set_index("Class")
-        st.success(f"Predicted image: {cls} with confidence score: {max(result_score)}")
+        result_score = scoring(cls)
+        df_score = pd.DataFrame({"Class": result_score.keys(), "Conf. Score": result_score.values()})
+        print(df_score)
+        st.success(f"Predicted image: {cls} with confidence score: {result_score[cls]}")
         
         colors = px.colors.qualitative.Set1
         fig = px.bar(
